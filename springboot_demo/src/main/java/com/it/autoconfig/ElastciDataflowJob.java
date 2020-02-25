@@ -1,5 +1,7 @@
 package com.it.autoconfig;
 
+import com.dangdang.ddframe.job.lite.api.strategy.impl.AverageAllocationJobShardingStrategy;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,4 +24,6 @@ public @interface ElastciDataflowJob {
     boolean overwrite() default false;
 
     boolean streamingProcess() default true;
+
+    Class<?> jobStrategy() default AverageAllocationJobShardingStrategy.class;
 }

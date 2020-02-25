@@ -1,5 +1,7 @@
 package com.it.autoconfig;
 
+import com.dangdang.ddframe.job.lite.api.strategy.impl.AverageAllocationJobShardingStrategy;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,5 +23,7 @@ public @interface ElasticSimpleJob {
     int shardingTotalCount() default 1;
 
     boolean overwrite() default false;
+
+    Class<?> jobStrategy() default AverageAllocationJobShardingStrategy.class;
 
 }

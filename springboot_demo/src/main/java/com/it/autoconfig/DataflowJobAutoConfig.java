@@ -53,13 +53,13 @@ public class DataflowJobAutoConfig {
                     boolean overwrite = elastciDataflowJob.overwrite();
                     boolean streamingProcess = elastciDataflowJob.streamingProcess();
                     int shardingTotalCount = elastciDataflowJob.shardingTotalCount();
+                    Class<?> jobStrategy = elastciDataflowJob.jobStrategy();
                     //job核心配置
                     JobCoreConfiguration jobCoreConfiguration = JobCoreConfiguration.newBuilder(jobName, corn, shardingTotalCount).build();
                     //job类型配置
                     DataflowJobConfiguration dataflowJobConfiguration = new DataflowJobConfiguration(jobCoreConfiguration, MyDataflowJob.class.getCanonicalName(), streamingProcess);
                     //job根配置,overwrite为覆盖以前的配置
-                    LiteJobConfiguration liteJobConfiguration = LiteJobConfiguration.newBuilder(dataflowJobConfiguration).overwrite(overwrite).build();
-
+                    LiteJobConfiguration liteJobConfiguration = LiteJobConfiguration.newBuilder(dataflowJobConfiguration).jobShardingStrategyClass(jobStrategy.getCanonicalName()).overwrite(overwrite).build();
                     //new JobScheduler(registryCenter, liteJobConfiguration).init();
                     //修改启动方式
                     new SpringJobScheduler((ElasticJob) instance, registryCenter, liteJobConfiguration).init();
