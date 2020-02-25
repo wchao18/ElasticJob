@@ -21,7 +21,8 @@ import java.util.Date;
         jobName = "simpleJob",
         corn = "0/10 * * * * ?",
         shardingTotalCount = 2,
-        overwrite = true
+        overwrite = true,
+        jobEvent = true
 )
 @Component//加@Configuration注解在读取注解的时候会有问题
 public class MySimpleJob implements SimpleJob {

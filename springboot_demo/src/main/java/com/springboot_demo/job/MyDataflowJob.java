@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
         corn = "0/10 * * * * ?",
         shardingTotalCount = 2,
         overwrite = true,
-        streamingProcess = true
+        streamingProcess = true,
+        jobEvent = true
 )
 public class MyDataflowJob implements DataflowJob<Order> {
 

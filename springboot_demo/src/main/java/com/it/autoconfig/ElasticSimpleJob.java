@@ -26,4 +26,6 @@ public @interface ElasticSimpleJob {
 
     Class<?> jobStrategy() default AverageAllocationJobShardingStrategy.class;
 
+    boolean jobEvent() default false;//是否事件追踪
+
 }

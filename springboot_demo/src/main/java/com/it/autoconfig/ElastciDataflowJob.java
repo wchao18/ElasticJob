@@ -23,7 +23,9 @@ public @interface ElastciDataflowJob {
 
     boolean overwrite() default false;
 
-    boolean streamingProcess() default true;
+    boolean streamingProcess() default false;
 
     Class<?> jobStrategy() default AverageAllocationJobShardingStrategy.class;
+
+    boolean jobEvent() default false;//是否事件追踪
 }
