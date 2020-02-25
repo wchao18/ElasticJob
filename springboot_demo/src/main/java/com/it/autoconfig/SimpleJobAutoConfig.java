@@ -1,10 +1,12 @@
 package com.it.autoconfig;
 
+import com.dangdang.ddframe.job.api.ElasticJob;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
 import com.dangdang.ddframe.job.lite.api.JobScheduler;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
+import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.springboot_demo.job.MySimpleJob;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +54,9 @@ public class SimpleJobAutoConfig {
                     SimpleJobConfiguration simpleJobConfiguration = new SimpleJobConfiguration(jobCoreConfiguration, MySimpleJob.class.getCanonicalName());
                     //job根配置,overwrite为覆盖以前的配置
                     LiteJobConfiguration liteJobConfiguration = LiteJobConfiguration.newBuilder(simpleJobConfiguration).overwrite(overwrite).build();
-                    new JobScheduler(registryCenter, liteJobConfiguration).init();
+                    //new JobScheduler(registryCenter, liteJobConfiguration).init();
+                    //修改启动方式
+                    new SpringJobScheduler((ElasticJob) instance,registryCenter,liteJobConfiguration).init();
                 }
 
 

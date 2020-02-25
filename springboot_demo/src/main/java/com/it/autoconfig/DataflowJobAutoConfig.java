@@ -1,5 +1,6 @@
 package com.it.autoconfig;
 
+import com.dangdang.ddframe.job.api.ElasticJob;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
@@ -7,6 +8,7 @@ import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
 import com.dangdang.ddframe.job.lite.api.JobScheduler;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
+import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.springboot_demo.job.MyDataflowJob;
 import com.springboot_demo.job.MySimpleJob;
@@ -21,7 +23,7 @@ import java.util.Map;
 
 /**
  * @author wangchao
- * @description TODO
+ * @description 任务流配置
  * @date 2020/02/22 22:25
  */
 @Configuration
@@ -57,7 +59,10 @@ public class DataflowJobAutoConfig {
                     DataflowJobConfiguration dataflowJobConfiguration = new DataflowJobConfiguration(jobCoreConfiguration, MyDataflowJob.class.getCanonicalName(), streamingProcess);
                     //job根配置,overwrite为覆盖以前的配置
                     LiteJobConfiguration liteJobConfiguration = LiteJobConfiguration.newBuilder(dataflowJobConfiguration).overwrite(overwrite).build();
-                    new JobScheduler(registryCenter, liteJobConfiguration).init();
+
+                    //new JobScheduler(registryCenter, liteJobConfiguration).init();
+                    //修改启动方式
+                    new SpringJobScheduler((ElasticJob) instance, registryCenter, liteJobConfiguration).init();
                 }
             }
         }
