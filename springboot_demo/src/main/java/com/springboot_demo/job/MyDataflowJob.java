@@ -3,6 +3,7 @@ package com.springboot_demo.job;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
 import com.it.autoconfig.ElastciDataflowJob;
+import com.springboot_demo.listener.MyNormalListener;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,8 @@ import java.util.stream.Collectors;
         shardingTotalCount = 2,
         overwrite = true,
         streamingProcess = true,
-        jobEvent = true
+        jobEvent = true,
+        jobListener = {MyNormalListener.class}
 )
 public class MyDataflowJob implements DataflowJob<Order> {
 

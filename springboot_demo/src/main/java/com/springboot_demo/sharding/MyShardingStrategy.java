@@ -1,4 +1,4 @@
-package com.it.autoconfig.sharding;
+package com.springboot_demo.sharding;
 
 import com.dangdang.ddframe.job.lite.api.strategy.JobInstance;
 import com.dangdang.ddframe.job.lite.api.strategy.JobShardingStrategy;

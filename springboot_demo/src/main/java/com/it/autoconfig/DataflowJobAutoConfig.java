@@ -2,18 +2,15 @@ package com.it.autoconfig;
 
 import com.dangdang.ddframe.job.api.ElasticJob;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
-import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
-import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
 import com.dangdang.ddframe.job.event.JobEventConfiguration;
 import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
-import com.dangdang.ddframe.job.lite.api.JobScheduler;
+import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.springboot_demo.job.MyDataflowJob;
-import com.springboot_demo.job.MySimpleJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -22,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -44,8 +42,8 @@ public class DataflowJobAutoConfig {
     @Autowired
     private DataSource dataSource;
 
-    @PostConstruct
-    public void initDataflowJob() {
+    //@PostConstruct
+    public void initDataflowJob() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(ElastciDataflowJob.class);
 
         for (Map.Entry<String, Object> entry : beansWithAnnotation.entrySet()) {
@@ -61,6 +59,20 @@ public class DataflowJobAutoConfig {
                     int shardingTotalCount = elastciDataflowJob.shardingTotalCount();
                     Class<?> jobStrategy = elastciDataflowJob.jobStrategy();
                     boolean jobEvent = elastciDataflowJob.jobEvent();
+                    Class<? extends ElasticJobListener>[] jobListenersClazz = elastciDataflowJob.jobListener();
+                    //监听器实例化
+                    ElasticJobListener[] listenersInstanceArray = null;
+                    if (jobListenersClazz != null && jobListenersClazz.length > 0) {
+                        listenersInstanceArray = new ElasticJobListener[jobListenersClazz.length];
+                        int i = 0;
+                        for (Class<? extends ElasticJobListener> listenersClazz : jobListenersClazz) {
+                            ElasticJobListener listenerInstance = listenersClazz.getDeclaredConstructor().newInstance();
+                            listenersInstanceArray[i] = listenerInstance;
+                            i++;
+                        }
+                    } else {
+                        listenersInstanceArray = new ElasticJobListener[0];
+                    }
                     //job核心配置
                     JobCoreConfiguration jobCoreConfiguration = JobCoreConfiguration.newBuilder(jobName, corn, shardingTotalCount).build();
                     //job类型配置
@@ -71,9 +83,9 @@ public class DataflowJobAutoConfig {
                     //修改启动方式
                     if (jobEvent) {
                         JobEventConfiguration jec = new JobEventRdbConfiguration(dataSource);
-                        new SpringJobScheduler((ElasticJob) instance, registryCenter, liteJobConfiguration, jec).init();
+                        new SpringJobScheduler((ElasticJob) instance, registryCenter, liteJobConfiguration, jec, listenersInstanceArray).init();
                     } else {
-                        new SpringJobScheduler((ElasticJob) instance, registryCenter, liteJobConfiguration).init();
+                        new SpringJobScheduler((ElasticJob) instance, registryCenter, liteJobConfiguration, listenersInstanceArray).init();
                     }
                 }
             }

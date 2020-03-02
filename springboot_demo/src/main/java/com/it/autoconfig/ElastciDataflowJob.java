@@ -1,5 +1,7 @@
 package com.it.autoconfig;
 
+import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
+import com.dangdang.ddframe.job.lite.api.strategy.JobShardingStrategy;
 import com.dangdang.ddframe.job.lite.api.strategy.impl.AverageAllocationJobShardingStrategy;
 
 import java.lang.annotation.ElementType;
@@ -25,7 +27,9 @@ public @interface ElastciDataflowJob {
 
     boolean streamingProcess() default false;
 
-    Class<?> jobStrategy() default AverageAllocationJobShardingStrategy.class;
+    Class<? extends JobShardingStrategy> jobStrategy() default AverageAllocationJobShardingStrategy.class;
 
     boolean jobEvent() default false;//是否事件追踪
+
+    Class<? extends ElasticJobListener>[] jobListener() default {};
 }
